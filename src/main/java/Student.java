@@ -1,28 +1,29 @@
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
-import javax.json.stream.JsonParsingException;
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
 public class Student {
-    public int n;
+    public double averageMarks;
     private String name;
     public Map<String, Integer> grades;
-    double averageMarks;
-    int rank;
+    private int rank;
 
+    // Constructor with initialization of grades map
     public Student(String name, Map<String, Integer> grades) {
         this.name = name;
-        this.grades = grades;
+        this.grades = new HashMap<>(grades); // Initialize to avoid null reference
+        this.averageMarks = calculateAverageMarks(); // Set initial average
     }
 
+    // Method to add or update a grade
     public void addGrade(String subject, int score) {
         grades.put(subject, score);
+        this.averageMarks = calculateAverageMarks(); // Recalculate average when grades are updated
     }
 
+    // Method to convert the Student object to a JSON object
     public JsonObject toJson() {
         JsonObjectBuilder gradesBuilder = Json.createObjectBuilder();
         for (Map.Entry<String, Integer> entry : grades.entrySet()) {
@@ -32,8 +33,11 @@ public class Student {
         return Json.createObjectBuilder()
                 .add("name", name)
                 .add("grades", gradesBuilder.build())
+                .add("averageMarks", averageMarks)
+                .add("rank", rank)
                 .build();
     }
+
     // Method to calculate average marks
     public double calculateAverageMarks() {
         if (grades.isEmpty()) {
@@ -51,6 +55,11 @@ public class Student {
         return averageMarks;
     }
 
+    public Map<String, Integer> getGrades()
+    {
+        return grades;
+    }
+
     // Setter for averageMarks
     public void setAverageMarks(double averageMarks) {
         this.averageMarks = averageMarks;
@@ -66,11 +75,13 @@ public class Student {
         this.rank = rank;
     }
 
+    // Getter for name
     public String getName() {
         return name;
     }
 
-
-
-
+    // Setter for name
+    public void setName(String name) {
+        this.name = name;
+    }
 }
