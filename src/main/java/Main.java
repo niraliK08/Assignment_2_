@@ -10,8 +10,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //part A
+        String inputFilePath = "students.json";
+        String outputFilePath = "updated_students.json";
 
+        //part A
+        //creates two maps to store the grades of two ppl
         Map<String, Integer> gradesJohn = new HashMap<>();
         gradesJohn.put("Math", 85);
         gradesJohn.put("Physics", 90);
@@ -22,8 +25,10 @@ public class Main {
         gradesJane.put("Math", 92);
         gradesJane.put("English", 81);
 
-        JsonObject johnDoe = createStudentJson("John Doe", gradesJohn);
-        JsonObject janeSmith = createStudentJson("Jane Smith", gradesJane);
+        //creates JSON objects for the two students and combines them into an array
+        JsonObject johnDoe = JsonMethods.createStudentJson("John Doe", gradesJohn);
+        JsonObject janeSmith = JsonMethods.createStudentJson("Jane Smith", gradesJane);
+
 
         JsonArrayBuilder studentsArrayBuilder = Json.createArrayBuilder()
                 .add(johnDoe)
@@ -33,6 +38,7 @@ public class Main {
                 .add("students", studentsArrayBuilder.build())
                 .build();
 
+        //Writes the JSON object to a file called students.json + error handling
         try (FileWriter fileWriter = new FileWriter("students.json");
              JsonWriter jsonWriter = Json.createWriter(fileWriter)) {
 
@@ -41,78 +47,34 @@ public class Main {
         } catch (IOException e) {
             System.err.println("Error writing to file: " + e.getMessage());
         }
-    }
-
-    private static JsonObject createStudentJson(String name, Map<String, Integer> grades) {
-        JsonObjectBuilder gradesBuilder = Json.createObjectBuilder();
-        for (Map.Entry<String, Integer> entry : grades.entrySet()) {
-            gradesBuilder.add(entry.getKey(), entry.getValue());
-        }
-
-        return Json.createObjectBuilder()
-                .add("name", name)
-                .add("grades", gradesBuilder.build())
-                .build();
-    }
-
-    //part B
-
-    String inputFilePath = "students.json";
-    String outputFilePath = "updated_students.json";
-    static List<Student> students = new ArrayList<>();
 
 
-    JsonObject studentsJsonObject;
+        JsonMethods.createStudentJson("Jane Smith", gradesJane);
 
-    {
+        //part B
+
+        JsonObject readJsonObject = null;
         try {
-            studentsJsonObject = JsonMethods.readJsonFile(inputFilePath);
+            readJsonObject = JsonMethods.readJsonFile(inputFilePath);
+            System.out.println("JSON file has been read successfully.");
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    JsonArray studentsArray = (JsonArray) studentsJsonObject.getJsonArray("students");
-
-    List<Student> stu = JsonMethods.parseStudents((javax.json.JsonArray) studentsArray);
-
-    public void calculateAveragesAndRank() {
-        // Calculate average marks for each student
-        for (Student student : students) {
-            student.setAverageMarks(student.calculateAverageMarks());
+            System.err.println("Error reading JSON file: " + e.getMessage());
+            return; // Exit the method if file reading fails
         }
 
+
+
+        JsonArray studentsArray = (JsonArray) studentsJsonObject.getJsonArray("students");
+
+        List<Student> stu = JsonMethods.parseStudents((JsonArray) studentsArray);
+
+        //calculate averages and rank
+        JsonMethods.calculateAveragesAndRank();
         // Sort students by average marks (higher marks = higher rank)
-        JsonMethods.sortStudentsByAverageMarks(students);
+        JsonMethods.sortStudentsByAverageMarks(JsonMethods.student);
 
-        // Assign ranks based on sorted order
-        for (int i = 0; i < students.size(); i++) {
-            students.get(i).setRank(i + 1);
-        }
-    }
+        JsonMethods.buildUpdatedJson(stu);
 
-    JsonObject updatedStudentsJsonObject = buildUpdatedJson(students);
-
-    private static JsonObject buildUpdatedJson(List<Student> students) {
-        JsonArrayBuilder updatedStudentsArrayBuilder = Json.createArrayBuilder();
-        for (Student student : students) {
-            JsonObjectBuilder studentBuilder = Json.createObjectBuilder()
-                    .add("name", student.n)
-                    .add("grades", JsonMethods.createGradesObject(student.grades))
-                    .add("average_marks", student.averageMarks)
-                    .add("rank", student.rank);
-            updatedStudentsArrayBuilder.add(studentBuilder);
-        }
-        return Json.createObjectBuilder()
-                .add("students", updatedStudentsArrayBuilder.build())
-                .build();
-    }
-
-    public static void printOutput() {
-        System.out.println("Students with average marks and ranks: ");
-        for (Student student : students) {
-            System.out.println("Name: " + student.getName() + ", Average Marks: " + student.getAverageMarks() + ", Rank: " + student.getRank());
-        }
-
+        JsonMethods.printOutput();
     }
 }
