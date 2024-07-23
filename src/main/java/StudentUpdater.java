@@ -17,6 +17,7 @@ public class StudentUpdater {
             createNewFile();
         }
 
+        //asks user to enter student name, subject, and grades
         while (true) {
             System.out.println("Enter student details:");
 
@@ -56,6 +57,7 @@ public class StudentUpdater {
         System.out.println("Student data updated successfully.");
     }
 
+    //creates new JSON file
     private static void createNewFile() {
         JsonObject initialJson = Json.createObjectBuilder()
                 .add("students", Json.createArrayBuilder().build())
@@ -68,6 +70,7 @@ public class StudentUpdater {
         }
     }
 
+    //creates a JsonObject to represent a student
     private static JsonObject createStudentJson(String name, Map<String, Integer> grades) {
         JsonObjectBuilder gradesBuilder = Json.createObjectBuilder();
         for (Map.Entry<String, Integer> entry : grades.entrySet()) {
