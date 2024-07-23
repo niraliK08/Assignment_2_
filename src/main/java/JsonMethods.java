@@ -7,7 +7,10 @@ import java.util.stream.Collectors;
 
 public class JsonMethods {
 
+    private static Object students;
+    static List<Student> student = new ArrayList<>();
 
+    //reads Json file
     public static JsonObject readJsonFile(String filePath) throws IOException {
         try (InputStream inputStream = new FileInputStream(filePath);
              JsonReader jsonReader = Json.createReader(inputStream)) {
@@ -15,6 +18,7 @@ public class JsonMethods {
         }
     }
 
+    //writes a JsonObject to a Json file
     public static void writeJsonFile(String filePath, JsonObject jsonObject) throws IOException {
         try (FileWriter fileWriter = new FileWriter(filePath);
              JsonWriter jsonWriter = Json.createWriter(fileWriter)) {
@@ -22,6 +26,7 @@ public class JsonMethods {
         }
     }
 
+    //converts a JsonArray into a list of Student Objects
     public static List<Student> parseStudents(JsonArray studentsArray) {
         List<Student> students = new ArrayList<>();
         for (JsonValue value : studentsArray) {
@@ -39,6 +44,7 @@ public class JsonMethods {
         return students;
     }
 
+    //creates a JsonObject from a map of grades
     public static JsonObject createGradesObject(Map<String, Integer> grades) {
         JsonObjectBuilder gradesBuilder = Json.createObjectBuilder();
         for (Map.Entry<String, Integer> entry : grades.entrySet()) {
@@ -47,7 +53,7 @@ public class JsonMethods {
         return gradesBuilder.build();
     }
 
-
+    //sorts students based on marks
     public static void sortStudentsByAverageMarks(List<Student> students) {
         int n = students.size();
         for (int i = 0; i < n - 1; i++) {
@@ -61,6 +67,7 @@ public class JsonMethods {
         }
     }
 
+    //creates a JsonObject to represent a student with name and grades
     public static JsonObject createStudentJson(String name, Map<String, Integer> grades) {
         JsonObjectBuilder gradesBuilder = Json.createObjectBuilder();
         for (Map.Entry<String, Integer> entry : grades.entrySet()) {
@@ -73,6 +80,40 @@ public class JsonMethods {
                 .build();
     }
 
+    //calculate average marks and rank
+    public static void calculateAveragesAndRank() {
+        // Calculate average marks for each student
+        for (Student student : student) {
+            student.setAverageMarks(student.calculateAverageMarks());
+        }
+        for (int i = 0; i < student.size(); i++) {
+            student.get(i).setRank(i + 1);
+        }
+    }
+
+    //creates a JsonObject that represents a list of students with their names, grades, average marks, and ranks
+    public static JsonObject buildUpdatedJson(List<Student> students) {
+        JsonArrayBuilder updatedStudentsArrayBuilder = Json.createArrayBuilder();
+        for (Student student : students) {
+            JsonObjectBuilder studentBuilder = Json.createObjectBuilder()
+                    .add("name", student.getName()) // Access name correctly
+                    .add("grades", createGradesObject(student.getGrades())) // Access grades correctly
+                    .add("average_marks", student.getAverageMarks()) // Access averageMarks correctly
+                    .add("rank", student.getRank()); // Access rank correctly
+            updatedStudentsArrayBuilder.add(studentBuilder); // Add the student JSON object to the array builder
+        }
+        return Json.createObjectBuilder()
+                .add("students", updatedStudentsArrayBuilder.build()) // Build the final JSON object
+                .build();
+    }
+
+    // Prints out each student's name, average marks, and rank to the console
+    public static void printOutput() {
+        System.out.println("Students with average marks and ranks: ");
+        for (Student student : student) {
+            System.out.println("Name: " + student.getName() + ", Average Marks: " + student.getAverageMarks() + ", Rank: " + student.getRank());
+        }
+    }
 
 
 }
