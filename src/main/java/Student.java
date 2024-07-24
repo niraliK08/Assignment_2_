@@ -47,6 +47,7 @@ public class Student {
         for (int grade : grades.values()) {
             total += grade;
         }
+        averageMarks = total / grades.size();
         return total / grades.size();
     }
 
