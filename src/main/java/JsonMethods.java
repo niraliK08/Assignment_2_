@@ -54,7 +54,7 @@ public class JsonMethods {
     }
 
     //sorts students based on marks
-    public static void sortStudentsByAverageMarks(List<Student> students) {
+    public static double sortStudentsByAverageMarks(List<Student> students) {
         int n = students.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
@@ -64,7 +64,9 @@ public class JsonMethods {
                     students.set(j + 1, temp);
                 }
             }
+            System.out.println(students);
         }
+        return 0.0;
     }
 
     //creates a JsonObject to represent a student with name and grades
