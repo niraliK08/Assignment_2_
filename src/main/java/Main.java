@@ -66,15 +66,21 @@ public class Main {
 
         JsonArray studentsArray = (JsonArray) studentsJsonObject.getJsonArray("students");
 
-        List<Student> stu = JsonMethods.parseStudents((JsonArray) studentsArray);
+        List<Student> stu = JsonMethods.parseStudents(studentsArray);
 
         //calculate averages and rank
         JsonMethods.calculateAveragesAndRank();
         // Sort students by average marks (higher marks = higher rank)
         JsonMethods.sortStudentsByAverageMarks(JsonMethods.student);
 
-        JsonMethods.buildUpdatedJson(stu);
+        JsonObject updatedStudentsJsonObject =  JsonMethods.buildUpdatedJson(stu);
+        try {
+            JsonMethods.writeJsonFile(outputFilePath, updatedStudentsJsonObject);
+            System.out.println("JSON file 'updated_students.json' has been created successfully.");
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
 
-        JsonMethods.printOutput();
+        //JsonMethods.printOutput();
     }
 }
